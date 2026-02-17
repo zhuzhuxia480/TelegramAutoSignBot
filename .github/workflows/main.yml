@@ -1,0 +1,62 @@
+name: Telegram Auto Sign
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  run-checkin:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install telethon
+
+      - name: Run check-in script
+        env:
+          API_ID: ${{ secrets.API_ID }}
+          API_HASH: ${{ secrets.API_HASH }}
+          SESSION_STRING: ${{ secrets.SESSION_STRING }}
+          BOT_CONFIG: ${{ vars.BOT_CONFIG }}
+        run: python main.py
+
+      - name: Push log to logs branch
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          mv checkin.log temp_new_log.txt
+          
+          git fetch origin logs || true
+          
+          if git show-ref --verify --quiet refs/remotes/origin/logs; then
+            git checkout logs
+            git pull origin logs --rebase
+          else
+            git checkout --orphan logs
+            git rm -rf .
+          fi
+          
+          cat temp_new_log.txt >> checkin.log
+          
+          rm temp_new_log.txt
+          
+          git add checkin.log
+          git commit -m "Auto check-in log update: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+          git push origin logs
