@@ -4,7 +4,7 @@ An automated daily sign-in script for Telegram bots, powered by GitHub Actions a
 
 ## ✨ Core Features
 * **☁️ Zero-Cost Deployment**: Runs entirely on GitHub Actions. No need for a local server or VPS.
-* **👥 Multi-Bot Support**: Sends sign-in commands to multiple bots sequentially. Each bot can use its own command (e.g. `/qd`, `/sign`) via a single combined `BOT_CONFIG` variable.
+* **👥 Multi-Bot Support**: Sends sign-in commands to multiple bots sequentially. Each bot can use its own command (e.g. `/qd`, `sign`) via a single combined `BOT_CONFIG` variable.
 * **🎲 Smart Anti-Ban System**: Built-in 1~20 minutes randomized startup delay and random pauses between messages to prevent triggering Telegram's spam filters.
 * **📝 Auto-Log Keepalive**: Automatically writes sign-in results to `checkin.log` and pushes it to the repository after each run. This perfectly bypasses GitHub Actions' 60-day inactivity suspension rule.
 
@@ -31,10 +31,10 @@ Install the dependency (`pip install telethon`) on your local machine and run a 
 2. Add a new variable:
    * `BOT_CONFIG`: Mapping of bot usernames and sign-in commands in a single string.
 
-     Format: comma-separated entries, each entry is `bot_username:command`.  
+     Format: comma-separated entries, each entry is `bot_username:command`. The command is sent exactly as configured, so add `/` yourself only when the target bot requires it.
      Examples:
-     * `@bot1:/qd,@bot2:/sign`
-     * `@bot1:/qd,@bot2:/sign,@bot3`  (bot3 uses default `/qd` since no command is specified)
+     * `@bot1:/qd,@bot2:sign`
+     * `@bot1:/qd,@bot2:sign,@bot3`  (bot3 uses default `/qd` since no command is specified)
 
 ### Step 5: Grant Action Permissions
 To allow the script to push the log file back to the repository:

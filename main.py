@@ -9,24 +9,25 @@ from telethon.sessions import StringSession
 API_ID = int(os.environ["API_ID"])
 API_HASH = os.environ["API_HASH"]
 SESSION_STRING = os.environ["SESSION_STRING"]
-# Combined mapping of bot usernames and commands, e.g. "@bot1:/qd,@bot2:/sign,@bot3"
+# Combined mapping of bot usernames and commands, e.g. "@bot1:/qd,@bot2:sign,@bot3"
 BOT_CONFIG_RAW = os.environ.get("BOT_CONFIG", "").strip()
 
 
-def _normalize_command(cmd: str) -> str:
-    """Ensure command has leading slash for Telegram."""
+def _resolve_command(cmd: str) -> str:
+    """Use the configured command as-is, defaulting to '/qd' when omitted."""
     cmd = (cmd or "").strip()
     if not cmd:
         return "/qd"
-    return cmd if cmd.startswith("/") else f"/{cmd}"
+    return cmd
 
 
 def get_bot_command_list() -> list[tuple[str, str]]:
     """
     Build (bot_username, command) pairs from BOT_CONFIG.
 
-    BOT_CONFIG example: "@bot1:/qd,@bot2:/sign,@bot3"
+    BOT_CONFIG example: "@bot1:/qd,@bot2:sign,@bot3"
     - Each entry: "bot_username:command"
+    - Commands are sent exactly as configured; no leading slash is added automatically.
     - If command is omitted, default "/qd" is used.
     """
     result: list[tuple[str, str]] = []
@@ -39,11 +40,11 @@ def get_bot_command_list() -> list[tuple[str, str]]:
         if ":" in entry:
             bot, cmd_raw = entry.split(":", 1)
         else:
-            bot, cmd_raw = entry, "qd"
+            bot, cmd_raw = entry, ""
         bot = bot.strip()
         if not bot:
             continue
-        cmd = _normalize_command(cmd_raw)
+        cmd = _resolve_command(cmd_raw)
         result.append((bot, cmd))
 
     return result
