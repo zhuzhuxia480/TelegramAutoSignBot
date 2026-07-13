@@ -1,12 +1,6 @@
 # 🤖 Telegram Auto Sign
 
 
-## 中文概览
-
-这是一个使用 GitHub Actions 与 Telethon 的 Telegram 自动签到机器人，适合按计划向多个 bot 发送签到命令。
-
-## English Overview
-
 This is a Telegram auto sign-in bot powered by GitHub Actions and Telethon. It can send scheduled sign-in commands to multiple bots.
 
 An automated daily sign-in script for Telegram bots, powered by GitHub Actions and Python (Telethon). It uses your personal account (Userbot) to send configurable sign-in commands to specified Telegram bots daily.
